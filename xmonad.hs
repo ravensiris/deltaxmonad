@@ -19,8 +19,6 @@ import           XMonad.Actions.Promote
 import           XMonad.Util.NamedScratchpad
 import qualified XMonad.StackSet               as W
 
-myMouseBindings = const mempty
-
 myGaps = smartSpacing gap . gaps gapSides
   where
     gap = 12
@@ -97,7 +95,6 @@ myConfig barPipe = myKeyBindings $ def
   { modMask       = mod4Mask
   , terminal      = "alacritty"
   , layoutHook    = myLayout
-  , mouseBindings = myMouseBindings
   , logHook       = myLogHook barPipe
   , workspaces    = ["GEN", "WRK", "SYS"] ++ (map show [4 .. 9])
   , manageHook    = namedScratchpadManageHook scratchpads

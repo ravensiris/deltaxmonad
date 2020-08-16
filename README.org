@@ -25,15 +25,6 @@
   import qualified XMonad.StackSet               as W
 #+END_SRC
 
-* Mouse bindings
-For now they are empty.
-
-Maybe my mouse will find some use.
-
-#+BEGIN_SRC haskell :tangle xmonad.hs
-  myMouseBindings = const mempty
-#+END_SRC
-
 * Layout
 ** Gaps
 #+BEGIN_SRC haskell :tangle xmonad.hs
@@ -161,7 +152,6 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
     { modMask       = mod4Mask
     , terminal      = "alacritty"
     , layoutHook    = myLayout
-    , mouseBindings = myMouseBindings
     , logHook       = myLogHook barPipe
     , workspaces    = ["GEN", "WRK", "SYS"] ++ (map show [4 .. 9])
     , manageHook    = namedScratchpadManageHook scratchpads
