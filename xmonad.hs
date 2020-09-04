@@ -1,3 +1,5 @@
+import           Data.Ratio
+
 import           XMonad
 import           XMonad.Hooks.DynamicLog
 import           XMonad.Layout.ThreeColumns
@@ -24,10 +26,14 @@ myGaps = smartSpacing gap . gaps gapSides
     gap = 12
     gapSides = zip [U,D,L,R] (repeat gap)
 
-myLayout = fullscreenFocus $ myGaps $ noBorders $ avoidStruts $ ThreeColMid
-  1
-  (3 / 100)
-  (1 / 2)
+threeColLayout = ThreeColMid 1 (3 % 100) (1 % 2)
+
+myLayout =
+  fullscreenFocus
+    $ myGaps
+    $ noBorders
+    $ avoidStruts
+    $ threeColLayout
 
 myKeyBindings = (`removeKeysP` blacklist) . (`additionalKeysP` whitelist)
  where
@@ -37,8 +43,9 @@ myKeyBindings = (`removeKeysP` blacklist) . (`additionalKeysP` whitelist)
     , ("<XF86AudioNext>", spawn "quodlibet --next")
     , ("<XF86AudioPrev>", spawn "quodlibet --previous")
     , ("<XF86AudioPlay>", spawn "quodlibet --play-pause")
-    , ("<F3>", spawn "picom-trans -c 80")
+    , ("<F3>", spawn "picom-trans -c 95")
     , ("S-<F3>", spawn "picom-trans -c 100")
+    , ("M-d", spawn "dmenu_run -fn \"Victor Mono Nerd Font-24\"")
     ] ++ scratchpadsKeybindings myScratchpads
 
   blacklist =
@@ -47,10 +54,10 @@ myKeyBindings = (`removeKeysP` blacklist) . (`additionalKeysP` whitelist)
     , "M-,"
     ]
 
-centeredFloat w h = customFloating $ W.RationalRect ((50 - w / 2) / 100)
-						    ((50 - h / 2) / 100)
-						    (w / 100)
-						    (h / 100)
+centeredFloat w h = customFloating $ W.RationalRect x y w h
+    where
+	x = 1%2 - (w / 2)
+	y = 1%2 - (h / 2)
 
 myScratchpads =
   [ ( NS "htop" "alacritty --title htop -e htop" (title =? "htop") terminalFloat
@@ -67,8 +74,8 @@ myScratchpads =
     )
   ]
   where
-    terminalFloat = centeredFloat 50 60
-    mediaFloat = centeredFloat 70 80
+    terminalFloat = centeredFloat (1%2) (3%5)
+    mediaFloat = centeredFloat (7%10) (4%5)
 
 
 scratchpads = map fst myScratchpads
@@ -101,6 +108,8 @@ myConfig barPipe = myKeyBindings $ def
 		    <+> manageDocks
 		    <+> manageHook def
   , startupHook   = setDefaultCursor xC_left_ptr
+  , normalBorderColor = "#FFFFFF"
+  , focusedBorderColor = "#bbc5ff"
   }
 
 main :: IO ()

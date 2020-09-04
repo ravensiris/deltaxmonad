@@ -1,8 +1,11 @@
 #+TITLE: XMonad Config
 #+AUTHOR: Raven's Iris
+#+PROPERTY: header-args :tangle xmonad.hs
 
 * Imports
-#+BEGIN_SRC haskell :tangle xmonad.hs
+#+BEGIN_SRC haskell 
+  import           Data.Ratio
+
   import           XMonad
   import           XMonad.Hooks.DynamicLog
   import           XMonad.Layout.ThreeColumns
@@ -27,23 +30,27 @@
 
 * Layout
 ** Gaps
-#+BEGIN_SRC haskell :tangle xmonad.hs
+#+BEGIN_SRC haskell 
   myGaps = smartSpacing gap . gaps gapSides
     where
       gap = 12
       gapSides = zip [U,D,L,R] (repeat gap)
 #+END_SRC
-** Rest
+** DONE Rest
 Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
-#+BEGIN_SRC haskell :tangle xmonad.hs
-  myLayout = fullscreenFocus $ myGaps $ noBorders $ avoidStruts $ ThreeColMid
-    1
-    (3 / 100)
-    (1 / 2)
+#+BEGIN_SRC haskell 
+  threeColLayout = ThreeColMid 1 (3 % 100) (1 % 2)
+
+  myLayout =
+    fullscreenFocus
+      $ myGaps
+      $ noBorders
+      $ avoidStruts
+      $ threeColLayout
 #+END_SRC
 
 * Keybindings
-#+BEGIN_SRC haskell :tangle xmonad.hs
+#+BEGIN_SRC haskell 
   myKeyBindings = (`removeKeysP` blacklist) . (`additionalKeysP` whitelist)
    where
     whitelist =
@@ -52,8 +59,9 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
       , ("<XF86AudioNext>", spawn "quodlibet --next")
       , ("<XF86AudioPrev>", spawn "quodlibet --previous")
       , ("<XF86AudioPlay>", spawn "quodlibet --play-pause")
-      , ("<F3>", spawn "picom-trans -c 80")
+      , ("<F3>", spawn "picom-trans -c 95")
       , ("S-<F3>", spawn "picom-trans -c 100")
+      , ("M-d", spawn "dmenu_run -fn \"Victor Mono Nerd Font-24\"")
       ] ++ scratchpadsKeybindings myScratchpads
 
     blacklist =
@@ -65,11 +73,11 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
 
 * Scratchpads
 
-#+BEGIN_SRC haskell :tangle xmonad.hs
-  centeredFloat w h = customFloating $ W.RationalRect ((50 - w / 2) / 100)
-						      ((50 - h / 2) / 100)
-						      (w / 100)
-						      (h / 100)
+#+BEGIN_SRC haskell 
+  centeredFloat w h = customFloating $ W.RationalRect x y w h
+      where
+	  x = 1%2 - (w / 2)
+	  y = 1%2 - (h / 2)
 
   myScratchpads =
     [ ( NS "htop" "alacritty --title htop -e htop" (title =? "htop") terminalFloat
@@ -86,8 +94,8 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
       )
     ]
     where
-      terminalFloat = centeredFloat 50 60
-      mediaFloat = centeredFloat 70 80
+      terminalFloat = centeredFloat (1%2) (3%5)
+      mediaFloat = centeredFloat (7%10) (4%5)
 
 
   scratchpads = map fst myScratchpads
@@ -99,12 +107,12 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
 * Bar
 ** Config
 #+BEGIN_SRC conf :tangle xmobar.conf
-  Config { font = "xft: VictorMono Nerd Font:pixelsize=16:antialias=true:hinting=true:light,xft:Koruri:pixelsize=16:antialias=true:hinting=true"
+  Config { font = "xft: VictorMono Nerd Font:pixelsize=26:antialias=true:hinting=true:light,xft:Koruri:pixelsize=26:antialias=true:hinting=true"
 	 , additionalFonts = []
 	 , bgColor = "#2e3440"
 	 , fgColor = "#FFFFFF"
 	 , alpha = 255
-	 , position = Static { xpos = 0 , ypos = 0, width = 1920, height = 18 }
+	 , position = Static { xpos = 0 , ypos = 0, width = 2560, height = 27 }
 	 , textOffset = -1
 	 , iconOffset = -1
 	 , lowerOnStart = True
@@ -129,7 +137,7 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
 
 #+END_SRC
 ** Log hook
-#+BEGIN_SRC haskell :tangle xmonad.hs
+#+BEGIN_SRC haskell 
   myLogHook barPipe =
     dynamicLogWithPP $ namedScratchpadFilterOutWorkspacePP $ def
       { ppCurrent         = wrap "[" "]"
@@ -147,7 +155,7 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
 #+END_SRC
 
 * Main
-#+BEGIN_SRC haskell :tangle xmonad.hs
+#+BEGIN_SRC haskell 
   myConfig barPipe = myKeyBindings $ def
     { modMask       = mod4Mask
     , terminal      = "alacritty"
@@ -158,6 +166,8 @@ Removed borders, added a fulscreen and avoidStruts(for xmobar) hook.
 		      <+> manageDocks
 		      <+> manageHook def
     , startupHook   = setDefaultCursor xC_left_ptr
+    , normalBorderColor = "#FFFFFF"
+    , focusedBorderColor = "#bbc5ff"
     }
 
   main :: IO ()
