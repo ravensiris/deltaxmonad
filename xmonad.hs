@@ -45,7 +45,7 @@ myKeyBindings = (`removeKeysP` blacklist) . (`additionalKeysP` whitelist)
     , ("<XF86AudioPlay>", spawn "quodlibet --play-pause")
     , ("<F3>", spawn "picom-trans -c 95")
     , ("S-<F3>", spawn "picom-trans -c 100")
-    , ("M-d", spawn "dmenu_run -fn \"Victor Mono Nerd Font-24\"")
+    , ("M-p", spawn "dmenu_run -fn \"Victor Mono Nerd Font-24\"")
     ] ++ scratchpadsKeybindings myScratchpads
 
   blacklist =
